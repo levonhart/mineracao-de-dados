@@ -1,8 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <mlpack/core.hpp>
-#include <mlpack/methods/random_forest/random_forest.hpp>
-#include <mlpack/methods/decision_tree/random_dimension_select.hpp>
+#include <mlpack/methods/linear_svm/linear_svm.hpp>
 #include <mlpack/core/cv/simple_cv.hpp>
 #include <mlpack/core/cv/metrics/accuracy.hpp>
 #include <mlpack/core/cv/metrics/precision.hpp>
@@ -12,7 +11,7 @@
 void usage(char pname[]);
 
 using namespace mlpack;
-using namespace mlpack::tree;
+using namespace mlpack::svm;
 using namespace mlpack::cv;
 
 int main(int argc, char *argv[]){
@@ -35,28 +34,28 @@ int main(int argc, char *argv[]){
   data.shed_row(data.n_rows -1);
 
   size_t nclasses = 2;
-  size_t minleafsize = 5;
-  size_t ntrees = 10;
   double tsplit = 0.25;
+  double lambda = 0.001; // L2 regularization
+  double delta = 1.0; // margin of difference
   double accuracy, precision, recall, f1;
-  RandomForest<GiniGain, RandomDimensionSelect> classifier;
+  LinearSVM<> classifier;
 
 
   if (argc > 2) nclasses = (size_t) atoi(argv[2]);
-  if (argc > 3) minleafsize = (size_t) atoi(argv[3]);
-  if (argc > 4) ntrees = (size_t) atoi(argv[4]);
+  if (argc > 3) lambda = (size_t) atoi(argv[3]);
+  if (argc > 4) delta = (size_t) atoi(argv[4]);
 
   // classifier = RandomForest<GiniGain, RandomDimensionSelect>(
   //     data, labels, nclasses, ntrees, minleafsize
   //     );
-  SimpleCV<RandomForest<GiniGain, RandomDimensionSelect>, Accuracy>
+  SimpleCV<LinearSVM<>, Accuracy>
           crossvalidation(tsplit, data, labels, nclasses);
-  accuracy = crossvalidation.Evaluate(ntrees, minleafsize); // training
+  accuracy = crossvalidation.Evaluate(lambda, delta); // training
 
-  std::cout << "RandomForest"
+  std::cout << "LinearSVM"
             << "\n  número de classes: " << nclasses
-            << "\n  tamanho mínino das folhas: " << minleafsize
-            << "\n  número de árvores: " << ntrees
+            << "\n  constante de regularização L2: " << lambda
+            << "\n  margem: " << delta
             << "\n";
 
   classifier = crossvalidation.Model();
@@ -86,6 +85,6 @@ int main(int argc, char *argv[]){
 }
 
 void usage(char pname[]){
-  std::cout << "Usage: " << pname << " PATH [NCLASSES [MINLEAFSIZE [NTREES]]]\n";
+  std::cout << "Usage: " << pname << " PATH [NCLASSES [LAMBDA [DELTA]]]\n";
   std::cout << "  Utiliza o método random_forest no dataset em PATH.\n";
 }
