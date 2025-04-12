@@ -42,8 +42,8 @@ int main(int argc, char *argv[]){
 
 
   if (argc > 2) nclasses = (size_t) atoi(argv[2]);
-  if (argc > 3) lambda = (size_t) atoi(argv[3]);
-  if (argc > 4) delta = (size_t) atoi(argv[4]);
+  if (argc > 3) lambda = (size_t) atof(argv[3]);
+  if (argc > 4) delta = (size_t) atof(argv[4]);
 
   // classifier = RandomForest<GiniGain, RandomDimensionSelect>(
   //     data, labels, nclasses, ntrees, minleafsize
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
             << "\nRecall: " << recall
             << "\nF1: " << f1 << "\n";
 
-  data::Save("model.xml", "model", classifier, false);
+  data::Save("svm_model.xml", "model", classifier, false);
 
 
 

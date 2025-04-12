@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
             << "\nRecall: " << recall
             << "\nF1: " << f1 << "\n";
 
-  data::Save("model.xml", "model", classifier, false);
+  data::Save("randomforest_model.xml", "model", classifier, false);
 
 
 
